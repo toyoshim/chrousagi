@@ -14,8 +14,6 @@ Twitter.prototype.Fetch = function (callback, args) {
     xhr.send();
 };
 Twitter.prototype.Notify = function (status) {
-    console.log(status);
-
     var user = status.getElementsByTagName("user")[0];
     var icon = user.getElementsByTagName("profile_image_url")[0].textContent;
     var name = user.getElementsByTagName("name")[0].textContent;
