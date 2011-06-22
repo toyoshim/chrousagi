@@ -1,6 +1,6 @@
 {
   "name": "Chroうさぎ",
-  "version": "0.2",
+  "version": "0.3",
   "description": "ゆかりん拡張ハァハァ",
   "icons": {
     "128": "icon_128.png"
@@ -17,4 +17,3 @@
     "notifications"
   ]
 }
-
