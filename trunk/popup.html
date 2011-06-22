@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <body>
-<div style="width:106px; height: 436px;">
-<!-- a01 ~ a13, b01 ~ b07 -->
-<img style="-webkit-user-select: none; cursor; -webkit-zoom-in;" src="http://www.tamurayukari.com/img/ph/content_a01.jpg" width="106" height="436">
-</div>
+<script>
+    var n = Math.floor(Math.random() * 13) + 1;
+    if (n < 10)
+        n = "0" + n;
+    document.write('<a target="_" href="http://www.tamurayukari.com/">');
+    document.write('<img style="-webkit-user-select: none; cursor; -webkit-zoom-in;" ');
+    document.write('src="http://www.tamurayukari.com/img/ph/content_a' + n + '.jpg" ');
+    document.write('width="106">');
+    document.write('</a>');
+</script>
 </body>
 </html>
-
