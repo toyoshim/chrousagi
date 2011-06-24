@@ -32,9 +32,6 @@ Diary.prototype.Check = function (callback, args) {
     this.Fetch(function (dom, self) {
         if (!dom)
             return false;
-        var diary = dom.getElementById("diary-box");
-        if (!diary)
-            return false;
         var oldId = localStorage.diaryId;
         var diary = dom.getElementById("diary-box");
         if (!diary)
@@ -45,9 +42,9 @@ Diary.prototype.Check = function (callback, args) {
         for (var i = 0, entry, newId = false; entry = entries[i]; i++) {
             var title = entry.getElementsByClassName("title")[0].textContent;
             var date = entry.getElementsByClassName("date")[0].textContent;
+            var id = title + date;
             if (!title || !date)
                 continue;
-            var id = title + date;
             if (!newId) {
                 localStorage.diaryId = id;
                 newId = true;
