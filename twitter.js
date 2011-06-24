@@ -1,6 +1,5 @@
 function Twitter () {
     this._url = "http://api.twitter.com/1/statuses/user_timeline/yukari_tamura.xml";
-    this._id = 0;
 }
 Twitter.prototype.Fetch = function (callback, args) {
     var xhr = new XMLHttpRequest();
@@ -28,15 +27,22 @@ Twitter.prototype.Check = function (callback, args) {
     this.Fetch(function (xml, self) {
         if (!xml)
             return false;
-        var status = xml.getElementsByTagName("status")[0];
-        if (!status)
+        var oldId = localStorage.twitterId;
+        var statuses = xml.getElementsByTagName("status");
+        if (!statuses)
             return false;
-        var id = status.getElementsByTagName("id")[0].textContent;
-        if (!id)
-            return false;
-        if (id != self._id) {
-            self._id = id;
-            self.Notify(status);
+        for (var i = 0, status, newId = false; status = statuses[i]; i++) {
+            var id = status.getElementsByTagName("id")[0].textContent;
+            if (!newId) {
+                localStorage.twitterId = id;
+                newId = true;
+            }
+            if (id) {
+                if (id === oldId) {
+                    break;
+                }
+                self.Notify(status);
+            }
         }
         if (callback)
             callback(args);
