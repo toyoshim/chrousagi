@@ -26,17 +26,20 @@ Twitter.prototype.Notify = function (status) {
 };
 Twitter.prototype.Check = function (callback, args) {
     this.Fetch(function (xml, self) {
-        try {
-            var status = xml.getElementsByTagName("status")[0];
-            var id = status.getElementsByTagName("id")[0].textContent;
-            if (id && id != self._id) {
-                self._id = id;
-                self.Notify(status);
-            }
-            if (callback)
-                callback(args);
-        } catch (e) {
-            throw e;
+        if (!xml)
+            return false;
+        var status = xml.getElementsByTagName("status")[0];
+        if (!status)
+            return false;
+        var id = status.getElementsByTagName("id")[0].textContent;
+        if (!id)
+            return false;
+        if (id != self._id) {
+            self._id = id;
+            self.Notify(status);
         }
+        if (callback)
+            callback(args);
+        return true;
     }, this);
 };

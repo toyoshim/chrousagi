@@ -5,12 +5,10 @@
     <script>
         var diary = new Diary();
         function pollingDiary () {
-            try {
-                diary.Check(function (args) {
-                    // Check once per ten minute.
-                    setTimeout(pollingDiary, 1000 * 60 * 10);
-                });
-            } catch (e) {
+            if (!diary.Check(function (args) {
+                // Check once per ten minute.
+                setTimeout(pollingDiary, 1000 * 60 * 10);
+            })) {
                 // Check once per hour.
                 setTimeout(pollingDiary, 1000 * 60 * 60);
             }
@@ -19,12 +17,10 @@
 
         var twitter = new Twitter();
         function pollingTwitter () {
-            try {
-                twitter.Check(function (args) {
-                    // Check once per minute.
-                    setTimeout(pollingTwitter, 1000 * 60);
-                });
-            } catch (e) {
+            if (!twitter.Check(function (args) {
+                // Check once per minute.
+                setTimeout(pollingTwitter, 1000 * 60);
+            })) {
                 // Check once per ten minute.
                 setTimeout(pollingTwitter, 1000 * 60 * 10);
             }
