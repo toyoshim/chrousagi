@@ -31,20 +31,25 @@ Diary.prototype.Notify = function (entry) {
 };
 Diary.prototype.Check = function (callback, args) {
     this.Fetch(function (dom, self) {
-        try {
-            var diary = dom.getElementById("diary-box");
-            var entry = diary.getElementsByClassName("entry-box")[0];
-            var title = entry.getElementsByClassName("title")[0].textContent;
-            var date = entry.getElementsByClassName("date")[0].textContent;
-            var id = title + date;
-            if (title && date && id != self._id) {
-                self._id = id;
-                self.Notify(entry);
-            }
-            if (callback)
-                callback(args);
-        } catch (e) {
-            throw e;
+        if (!dom)
+            return false;
+        var diary = dom.getElementById("diary-box");
+        if (!diary)
+            return false;
+        var entry = diary.getElementsByClassName("entry-box")[0];
+        if (!entry)
+            return false;
+        var title = entry.getElementsByClassName("title")[0].textContent;
+        var date = entry.getElementsByClassName("date")[0].textContent;
+        var id = title + date;
+        if (!title || !date)
+            return false;
+        if (id != self._id) {
+            self._id = id;
+            self.Notify(entry);
         }
+        if (callback)
+            callback(args);
+        return true;
     }, this);
 };
