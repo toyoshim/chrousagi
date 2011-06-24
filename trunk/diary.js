@@ -1,6 +1,5 @@
 function Diary () {
     this._url = "http://www.tamurayukari.com/diary/index.html";
-    this._id = "N/A";
 }
 Diary.prototype.Fetch = function (callback, args) {
     var xhr = new XMLHttpRequest();
@@ -36,16 +35,25 @@ Diary.prototype.Check = function (callback, args) {
         var diary = dom.getElementById("diary-box");
         if (!diary)
             return false;
-        var entry = diary.getElementsByClassName("entry-box")[0];
-        if (!entry)
+        var oldId = localStorage.diaryId;
+        var diary = dom.getElementById("diary-box");
+        if (!diary)
             return false;
-        var title = entry.getElementsByClassName("title")[0].textContent;
-        var date = entry.getElementsByClassName("date")[0].textContent;
-        var id = title + date;
-        if (!title || !date)
+        var entries = diary.getElementsByClassName("entry-box");
+        if (!entries)
             return false;
-        if (id != self._id) {
-            self._id = id;
+        for (var i = 0, entry, newId = false; entry = entries[i]; i++) {
+            var title = entry.getElementsByClassName("title")[0].textContent;
+            var date = entry.getElementsByClassName("date")[0].textContent;
+            if (!title || !date)
+                continue;
+            var id = title + date;
+            if (!newId) {
+                localStorage.diaryId = id;
+                newId = true;
+            }
+            if (id === oldId)
+                break;
             self.Notify(entry);
         }
         if (callback)
