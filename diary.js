@@ -14,7 +14,7 @@ Diary.prototype.Fetch = function (callback, args) {
         var node = range.createContextualFragment(xhr.responseText);
         dom.documentElement.appendChild(node);
         if (callback)
-            callback(dom, args);
+            callback(dom, xhr.status, args);
     };
     xhr.send();
 };
@@ -22,39 +22,54 @@ Diary.prototype.Notify = function (entry) {
     var title = entry.getElementsByClassName("title")[0].textContent;
     var date = entry.getElementsByClassName("date")[0].textContent;
     var text = entry.getElementsByClassName("text-box")[0].textContent;
+    if (!title || !date || !text)
+        return false;
     var notification = webkitNotifications.createNotification(
             "icon.png",
             title + " (" + date + ") from Diary",
             text);
     notification.show();
+    return true;
 };
 Diary.prototype.Check = function (callback, args) {
-    this.Fetch(function (dom, self) {
-        if (!dom)
-            return false;
+    this.Fetch(function (dom, status, self) {
+        if (status != 200) {
+            if (callback)
+                callback(false, args);
+            return;
+        }
         var oldId = localStorage.diaryId;
-        var diary = dom.getElementById("diary-box");
-        if (!diary)
-            return false;
-        var entries = diary.getElementsByClassName("entry-box");
-        if (!entries)
-            return false;
-        for (var i = 0, entry, newId = false; entry = entries[i]; i++) {
-            var title = entry.getElementsByClassName("title")[0].textContent;
-            var date = entry.getElementsByClassName("date")[0].textContent;
-            var id = title + date;
-            if (!title || !date)
-                continue;
-            if (!newId) {
-                localStorage.diaryId = id;
-                newId = true;
+        try {
+            var diary = dom.getElementById("diary-box");
+            if (!diary)
+                throw new Error("diary-box");
+            var entries = diary.getElementsByClassName("entry-box");
+            if (!entries)
+                throw new Error("entry-box");
+            for (var i = 0, entry, newId = false; entry = entries[i]; i++) {
+                var title = entry.getElementsByClassName("title")[0].textContent;
+                var date = entry.getElementsByClassName("date")[0].textContent;
+                var id = title + date;
+                if (!title || !date) {
+                    console.log("Unknown diary format as follow");
+                    console.log(entry);
+                    continue;
+                }
+                if (!newId) {
+                    localStorage.diaryId = id;
+                    newId = true;
+                }
+                if (id === oldId)
+                    break;
+                self.Notify(entry);
             }
-            if (id === oldId)
-                break;
-            self.Notify(entry);
+        } catch (e) {
+            console.log("Unknown diary format: " + e.message + " not found.");
+            if (callback)
+                callback(false, args);
+            return;
         }
         if (callback)
-            callback(args);
-        return true;
+            callback(true, args);
     }, this);
 };
