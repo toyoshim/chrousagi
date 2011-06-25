@@ -5,25 +5,31 @@
     <script>
         var diary = new Diary();
         function pollingDiary () {
-            if (!diary.Check(function (args) {
-                // Check once per ten minute.
-                setTimeout(pollingDiary, 1000 * 60 * 10);
-            })) {
-                // Check once per hour.
-                //setTimeout(pollingDiary, 1000 * 60 * 60);
-            }
+            diary.Check(function (result, args) {
+                if (result) {
+                    // Check once per ten minute.
+                    setTimeout(pollingDiary, 1000 * 60 * 10);
+                } else {
+                    // Check once per hour.
+                    console.log("Diary return invalid or unknown format page, then sleep one hour.");
+                    setTimeout(pollingDiary, 1000 * 60 * 60);
+                }
+            }, null);
         }
         pollingDiary();
 
         var twitter = new Twitter();
         function pollingTwitter () {
-            if (!twitter.Check(function (args) {
-                // Check once per minute.
-                setTimeout(pollingTwitter, 1000 * 60);
-            })) {
-                // Check once per ten minute.
-                //setTimeout(pollingTwitter, 1000 * 60 * 10);
-            }
+            twitter.Check(function (result, args) {
+                if (result) {
+                    // Check once per minute.
+                    setTimeout(pollingTwitter, 1000 * 60);
+                } else {
+                    // Check once per ten minute.
+                    console.log("Twitter return invalid page, then sleep ten minutes.");
+                    setTimeout(pollingTwitter, 1000 * 60 * 10);
+                }
+            }, null);
         }
         pollingTwitter();
     </script>

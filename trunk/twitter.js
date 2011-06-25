@@ -8,29 +8,35 @@ Twitter.prototype.Fetch = function (callback, args) {
         if (xhr.readyState != 4)
             return;
         if (callback)
-            callback(xhr.responseXML, args);
+            callback(xhr.responseXML, xhr.status, args);
     };
     xhr.send();
 };
 Twitter.prototype.Notify = function (status) {
     var user = status.getElementsByTagName("user")[0];
+    if (!user)
+        return false;
     var icon = user.getElementsByTagName("profile_image_url")[0].textContent;
     var name = user.getElementsByTagName("name")[0].textContent;
     var text = status.getElementsByTagName("text")[0].textContent;
+    if (!icon || !name || !text)
+        return false;
     var notification = webkitNotifications.createNotification(
             icon,
             name + " from Twitter",
             text);
     notification.show();
+    return true;
 };
 Twitter.prototype.Check = function (callback, args) {
-    this.Fetch(function (xml, self) {
-        if (!xml)
-            return false;
+    this.Fetch(function (xml, status, self) {
+        if (status != 200) {
+            if (callback)
+                callback(false, args);
+            return;
+        }
         var oldId = localStorage.twitterId;
         var statuses = xml.getElementsByTagName("status");
-        if (!statuses)
-            return false;
         for (var i = 0, status, newId = false; status = statuses[i]; i++) {
             var id = status.getElementsByTagName("id")[0].textContent;
             if (!newId) {
@@ -41,11 +47,13 @@ Twitter.prototype.Check = function (callback, args) {
                 if (id === oldId) {
                     break;
                 }
-                self.Notify(status);
+                if (!self.Notify(status)) {
+                    console.log("Unknown tweet format as follow");
+                    console.log(status);
+                }
             }
         }
         if (callback)
-            callback(args);
-        return true;
+            callback(true, args);
     }, this);
 };
