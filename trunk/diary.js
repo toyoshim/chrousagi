@@ -46,7 +46,7 @@ Diary.prototype.Check = function (callback, args) {
             var entries = diary.getElementsByClassName("entry-box");
             if (!entries)
                 throw new Error("entry-box");
-            for (var i = 0, entry, newId = false; entry = entries[i]; i++) {
+            for (var i = entries.length - 1, entry, newId = false; entry = entries[i]; i--) {
                 var title = entry.getElementsByClassName("title")[0].textContent;
                 var date = entry.getElementsByClassName("date")[0].textContent;
                 var id = title + date;
@@ -55,13 +55,15 @@ Diary.prototype.Check = function (callback, args) {
                     console.log(entry);
                     continue;
                 }
-                if (!newId) {
+                if (newId || (i == 0 && oldId != id)) {
+                    if (!self.Notify(entry)) {
+                        console.log("Unknown diary format as follow");
+                        console.log(entry);
+                    }
                     localStorage.diaryId = id;
-                    newId = true;
                 }
-                if (id === oldId)
-                    break;
-                self.Notify(entry);
+                if (oldId == id)
+                    newId = true;
             }
         } catch (e) {
             console.log("Unknown diary format: " + e.message + " not found.");
