@@ -1,16 +1,19 @@
 function Twitter () {
+    this._xhr = null;
     this._url = "http://api.twitter.com/1/statuses/user_timeline/yukari_tamura.xml";
 }
 Twitter.prototype.Fetch = function (callback, args) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", this._url, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState != 4)
+    this._xhr = new XMLHttpRequest();
+    this._xhr.open("GET", this._url, true);
+    this._xhr._owner = this;
+    this._xhr.onreadystatechange = function () {
+        if (this.readyState != 4)
             return;
         if (callback)
-            callback(xhr.responseXML, xhr.status, args);
+            callback(this.responseXML, this.status, args);
+        this._owner._xhr = null;
     };
-    xhr.send();
+    this._xhr.send();
 };
 Twitter.prototype.Notify = function (status) {
     var user = status.getElementsByTagName("user")[0];
