@@ -10,11 +10,11 @@
             information.Check(function (result, args) {
                 if (result) {
                     // Check once per hour.
-                    setTimeout(pollingDiary, 1000 * 60 * 60);
+                    setTimeout(pollingInformation, 1000 * 60 * 60);
                 } else {
                     // Check once per half day.
                     console.log("Information return invalid or unknown format page, then sleep half day.");
-                    setTimeout(pollingDiary, 1000 * 60 * 60 * 12);
+                    setTimeout(pollingInformation, 1000 * 60 * 60 * 12);
                 }
             }, null);
         }
