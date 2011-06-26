@@ -1,19 +1,22 @@
 function HtmlPage () {
+    this._xhr = null;
 }
 HtmlPage.prototype.Fetch = function (url, callback, args) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState != 4)
+    this._xhr = new XMLHttpRequest();
+    this._xhr.open("GET", url, true);
+    this._xhr._owner = this;
+    this._xhr.onreadystatechange = function () {
+        if (this.readyState != 4)
             return;
         var dom = document.implementation.createHTMLDocument("");
         var range = dom.createRange();
         range.selectNodeContents(dom.documentElement);
         range.deleteContents();
-        var node = range.createContextualFragment(xhr.responseText);
+        var node = range.createContextualFragment(this.responseText);
         dom.documentElement.appendChild(node);
         if (callback)
-            callback(dom, xhr.status, args);
+            callback(dom, this.status, args);
+        this._owner._xhr = null;
     };
-    xhr.send();
+    this._xhr.send();
 };
