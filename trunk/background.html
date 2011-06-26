@@ -1,8 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja"><head>
-    <script src="twitter.js"></script>
+    <script src="htmlpage.js"></script>
+    <script src="information.js"></script>
     <script src="diary.js"></script>
+    <script src="twitter.js"></script>
     <script>
+        var information = new Information();
+        function pollingInformation () {
+            information.Check(function (result, args) {
+                if (result) {
+                    // Check once per hour.
+                    setTimeout(pollingDiary, 1000 * 60 * 60);
+                } else {
+                    // Check once per half day.
+                    console.log("Information return invalid or unknown format page, then sleep half day.");
+                    setTimeout(pollingDiary, 1000 * 60 * 60 * 12);
+                }
+            }, null);
+        }
+        pollingInformation();
+
         var diary = new Diary();
         function pollingDiary () {
             diary.Check(function (result, args) {

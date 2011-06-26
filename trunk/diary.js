@@ -1,23 +1,8 @@
 function Diary () {
     this._url = "http://www.tamurayukari.com/diary/index.html";
 }
-Diary.prototype.Fetch = function (callback, args) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", this._url, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState != 4)
-            return;
-        var dom = document.implementation.createHTMLDocument("");
-        var range = dom.createRange();
-        range.selectNodeContents(dom.documentElement);
-        range.deleteContents();
-        var node = range.createContextualFragment(xhr.responseText);
-        dom.documentElement.appendChild(node);
-        if (callback)
-            callback(dom, xhr.status, args);
-    };
-    xhr.send();
-};
+Diary.prototype = new HtmlPage();
+Diary.prototype.constructor = Diary;
 Diary.prototype.Notify = function (entry) {
     var title = entry.getElementsByClassName("title")[0].textContent;
     var date = entry.getElementsByClassName("date")[0].textContent;
@@ -32,7 +17,7 @@ Diary.prototype.Notify = function (entry) {
     return true;
 };
 Diary.prototype.Check = function (callback, args) {
-    this.Fetch(function (dom, status, self) {
+    this.Fetch(this._url, function (dom, status, self) {
         if (status != 200) {
             if (callback)
                 callback(false, args);
