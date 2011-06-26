@@ -37,21 +37,17 @@ Twitter.prototype.Check = function (callback, args) {
         }
         var oldId = localStorage.twitterId;
         var statuses = xml.getElementsByTagName("status");
-        for (var i = 0, status, newId = false; status = statuses[i]; i++) {
+        for (var i = statuses.length - 1, status, newId = false; status = statuses[i]; i--) {
             var id = status.getElementsByTagName("id")[0].textContent;
-            if (!newId) {
-                localStorage.twitterId = id;
-                newId = true;
-            }
-            if (id) {
-                if (id === oldId) {
-                    break;
-                }
+            if (newId || (i == 0 && oldId != id)) {
                 if (!self.Notify(status)) {
                     console.log("Unknown tweet format as follow");
                     console.log(status);
                 }
+                localStorage.twitterId = id;
             }
+            if (oldId == id)
+                newId = true;
         }
         if (callback)
             callback(true, args);
