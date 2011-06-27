@@ -16,5 +16,6 @@
     "http://www.tamurayukari.com/",
     "http://api.twitter.com/",
     "notifications"
-  ]
+  ],
+  "options_page": "options.html"
 }

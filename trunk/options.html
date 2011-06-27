@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title>Chrousagi Options</title>
+<script src="options.js"></script>
+</head>
+<body onload="Options.restore()">
+
+Notifiable Events:
+<div>
+ <input type="checkbox" id="notifyTwitter" /><label for="notifyTwitter">Twitter (@yukari_tamrua)</label><br />
+ <input type="checkbox" id="notifyDiary" /><label for="notifyDiary">Diary</label><br />
+ <input type="checkbox" id="notifyInformation" /><label for="notifyInformation">Information from Mellow Pretty</label><br />
+</div>
+<br />
+<button onclick="Options.save()">Save</button>
+<div id="status"></div>
+</body>
+</html>

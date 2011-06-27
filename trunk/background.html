@@ -4,50 +4,64 @@
     <script src="information.js"></script>
     <script src="diary.js"></script>
     <script src="twitter.js"></script>
+    <script src="options.js"></script>
     <script>
-        var information = new Information();
-        function pollingInformation () {
-            information.Check(function (result, args) {
+        function Poller (inst, interval_success, interval_failure, error_msg) {
+            this.instance = inst;
+            this._polling = false;
+            this.interval_success = interval_success;
+            this.interval_failure = interval_failure;
+            this.error_msg = error_msg;
+        }
+        Poller.prototype.StartPolling = function(key) {
+            var op = Options.get(key);
+            if (op === "true" && this._polling === false) {
+                this._polling = true;
+                this._Poll();
+            } else if (op !== "true" && this._polling !== false) {
+                this._polling = false;
+            }
+        };
+        Poller.prototype._Poll = function() {
+            if (!this._polling) {
+                return;
+            }
+            var self = this;
+            this.instance.Check(function(result, args) {
                 if (result) {
-                    // Check once per hour.
-                    setTimeout(pollingInformation, 1000 * 60 * 60);
+                    setTimeout(self._Poll.bind(self), self.interval_success);
                 } else {
-                    // Check once per half day.
-                    console.log("Information return invalid or unknown format page, then sleep half day.");
-                    setTimeout(pollingInformation, 1000 * 60 * 60 * 12);
+                    console.log(self.error_msg)
+                    setTimeout(self._Poll.bind(self), self.interval_failure);
                 }
             }, null);
-        }
-        pollingInformation();
+        };
 
-        var diary = new Diary();
-        function pollingDiary () {
-            diary.Check(function (result, args) {
-                if (result) {
-                    // Check once per ten minute.
-                    setTimeout(pollingDiary, 1000 * 60 * 10);
-                } else {
-                    // Check once per hour.
-                    console.log("Diary return invalid or unknown format page, then sleep one hour.");
-                    setTimeout(pollingDiary, 1000 * 60 * 60);
-                }
-            }, null);
-        }
-        pollingDiary();
+        var information = new Poller(
+                new Information(),
+                1000 * 60 * 60,
+                1000 * 60 * 60 * 12,
+                "Information return invalid or unknown format page, then sleep half day."
+                );
+        var diary = new Poller(
+                new Diary(),
+                1000 * 60 * 10,
+                1000 * 60 * 60,
+                "Diary return invalid or unknown format page, then sleep one hour."
+                );
+        var twitter = new Poller(
+                new Twitter(),
+                1000 * 60,
+                1000 * 60 * 10,
+                "Twitter return invalid page, then sleep ten minutes."
+                );
 
-        var twitter = new Twitter();
-        function pollingTwitter () {
-            twitter.Check(function (result, args) {
-                if (result) {
-                    // Check once per minute.
-                    setTimeout(pollingTwitter, 1000 * 60);
-                } else {
-                    // Check once per ten minute.
-                    console.log("Twitter return invalid page, then sleep ten minutes.");
-                    setTimeout(pollingTwitter, 1000 * 60 * 10);
-                }
-            }, null);
+        function updateOptions() {
+            information.StartPolling("notifyInformation");
+            diary.StartPolling("notifyDiary");
+            twitter.StartPolling("notifyTwitter");
         }
-        pollingTwitter();
+        updateOptions();
+        
     </script>
 </head></html>
