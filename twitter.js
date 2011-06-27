@@ -28,12 +28,17 @@ Twitter.prototype.Notify = function (status) {
             icon,
             name + " from Twitter",
             text);
+    notification.onclick = function() {
+        var id = status.getElementsByTagName("id")[0].textContent;
+        chrome.tabs.create({url: "http://twitter.com/"+name+"/status/"+id, selected: false});
+        notification.cancel();
+    }
     notification.show();
     return true;
 };
 Twitter.prototype.Check = function (callback, args) {
-    this.Fetch(function (xml, status, self) {
-        if (status != 200) {
+    this.Fetch(function (xml, stat, self) {
+        if (stat != 200) {
             if (callback)
                 callback(false, args);
             return;
