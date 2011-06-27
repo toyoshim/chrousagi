@@ -13,6 +13,12 @@ Information.prototype.Notify = function (entry) {
             "icon.png",
             date + " " + title + " from Information",
             text);
+    var self = this;
+    notification.onclick = function (){
+        var id = entry.id;
+        chrome.tabs.create({url: self._url + "#" + id, selected: false});
+        notification.cancel();
+    };
     notification.show();
     return true;
 };

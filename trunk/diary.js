@@ -13,6 +13,12 @@ Diary.prototype.Notify = function (entry) {
             "icon.png",
             title + " (" + date + ") from Diary",
             text);
+    notification.onclick = function() {
+        var url = entry.getElementsByClassName("comment-count")[0]
+            .getElementsByTagName("a")[0].getAttribute("href");
+        chrome.tabs.create({url: url, selected: false});
+        notification.cancel();
+    }
     notification.show();
     return true;
 };
